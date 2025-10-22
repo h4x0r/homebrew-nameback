@@ -23,14 +23,8 @@ class Nameback < Formula
     # Mount the DMG
     system "hdiutil", "attach", cached_download, "-mountpoint", buildpath/"mount"
 
-    # Install both binaries if they exist
-    if File.exist?(buildpath/"mount/nameback")
-      bin.install buildpath/"mount/nameback"
-    end
-
-    if File.exist?(buildpath/"mount/nameback-gui")
-      bin.install buildpath/"mount/nameback-gui"
-    end
+    # Install only the CLI binary
+    bin.install buildpath/"mount/nameback"
 
     # Unmount the DMG
     system "hdiutil", "detach", buildpath/"mount"

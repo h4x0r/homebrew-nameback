@@ -4,12 +4,23 @@ Official Homebrew tap for [nameback](https://github.com/h4x0r/nameback) - Rename
 
 ## Installation
 
+### Command-Line Tool (CLI)
+
 ```bash
 brew tap h4x0r/nameback
 brew install nameback
 ```
 
-This automatically installs nameback with all dependencies:
+### GUI Application
+
+```bash
+brew tap h4x0r/nameback
+brew install --cask nameback
+```
+
+The GUI app will be installed as "Nameback" in your Applications folder.
+
+Both installations automatically include all dependencies:
 - **exiftool** - Required for metadata extraction
 - **tesseract** + **tesseract-lang** - Multi-language OCR support
 - **ffmpeg** - Video frame extraction
