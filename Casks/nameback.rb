@@ -13,7 +13,7 @@ cask "nameback" do
   desc "GUI for intelligent file renaming based on metadata with OCR support"
   homepage "https://github.com/h4x0r/nameback"
 
-  app "nameback-gui", target: "Nameback.app"
+  app "Nameback.app"
 
   zap trash: [
     "~/Library/Application Support/Nameback",
