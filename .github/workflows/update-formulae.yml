@@ -1,0 +1,92 @@
+name: Update Homebrew Formulae
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update to (e.g., 0.6.5)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update-formulae:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout homebrew-nameback repo
+        uses: actions/checkout@v4
+
+      - name: Download checksums from nameback release
+        run: |
+          VERSION="${{ inputs.version }}"
+          echo "Downloading checksums for v${VERSION}..."
+          gh release download "v${VERSION}" \
+            --repo h4x0r/nameback \
+            --pattern "checksums.txt"
+
+          echo "Contents of checksums.txt:"
+          cat checksums.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Extract SHA256 checksums
+        id: checksums
+        run: |
+          # Extract ARM64 DMG checksum
+          ARM64_SHA=$(grep "nameback-aarch64-apple-darwin.dmg" checksums.txt | awk '{print $1}')
+          echo "arm64_sha=${ARM64_SHA}" >> $GITHUB_OUTPUT
+          echo "ARM64 DMG SHA256: ${ARM64_SHA}"
+
+          # Extract x86_64 DMG checksum
+          X86_64_SHA=$(grep "nameback-x86_64-apple-darwin.dmg" checksums.txt | awk '{print $1}')
+          echo "x86_64_sha=${X86_64_SHA}" >> $GITHUB_OUTPUT
+          echo "x86_64 DMG SHA256: ${X86_64_SHA}"
+
+      - name: Update Homebrew Formula
+        run: |
+          VERSION="${{ inputs.version }}"
+          ARM64_SHA="${{ steps.checksums.outputs.arm64_sha }}"
+          X86_64_SHA="${{ steps.checksums.outputs.x86_64_sha }}"
+
+          # Update version
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" Formula/nameback.rb
+
+          # Update ARM64 URL and SHA
+          sed -i "s|url \"https://github.com/h4x0r/nameback/releases/download/v.*/nameback-aarch64-apple-darwin.dmg\"|url \"https://github.com/h4x0r/nameback/releases/download/v${VERSION}/nameback-aarch64-apple-darwin.dmg\"|" Formula/nameback.rb
+          sed -i "/aarch64-apple-darwin.dmg/,/sha256/ s/sha256 \".*\"/sha256 \"${ARM64_SHA}\"/" Formula/nameback.rb
+
+          # Update x86_64 URL and SHA
+          sed -i "s|url \"https://github.com/h4x0r/nameback/releases/download/v.*/nameback-x86_64-apple-darwin.dmg\"|url \"https://github.com/h4x0r/nameback/releases/download/v${VERSION}/nameback-x86_64-apple-darwin.dmg\"|" Formula/nameback.rb
+          sed -i "/x86_64-apple-darwin.dmg/,/sha256/ s/sha256 \".*\"/sha256 \"${X86_64_SHA}\"/" Formula/nameback.rb
+
+          echo "Updated Formula/nameback.rb:"
+          cat Formula/nameback.rb
+
+      - name: Update Homebrew Cask
+        run: |
+          VERSION="${{ inputs.version }}"
+          ARM64_SHA="${{ steps.checksums.outputs.arm64_sha }}"
+          X86_64_SHA="${{ steps.checksums.outputs.x86_64_sha }}"
+
+          # Update version
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" Casks/nameback.rb
+
+          # Update ARM64 SHA (keep URL with version interpolation)
+          sed -i "0,/sha256 \".*\"/{s/sha256 \".*\"/sha256 \"${ARM64_SHA}\"/}" Casks/nameback.rb
+
+          # Update x86_64 SHA (second occurrence)
+          sed -i "0,/sha256 \".*\"/b; s/sha256 \".*\"/sha256 \"${X86_64_SHA}\"/" Casks/nameback.rb
+
+          echo "Updated Casks/nameback.rb:"
+          cat Casks/nameback.rb
+
+      - name: Commit and push changes
+        run: |
+          VERSION="${{ inputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/nameback.rb Casks/nameback.rb
+          git commit -m "chore: update to version v${VERSION}"
+          git push
