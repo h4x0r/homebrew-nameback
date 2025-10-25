@@ -7,6 +7,8 @@ on:
         description: 'Version to update to (e.g., 0.6.5)'
         required: true
         type: string
+  repository_dispatch:
+    types: [update-formulae]
 
 permissions:
   contents: write
@@ -15,12 +17,20 @@ jobs:
   update-formulae:
     runs-on: ubuntu-latest
     steps:
+      - name: Set version from event
+        id: get-version
+        run: |
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "version=${{ github.event.client_payload.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          fi
       - name: Checkout homebrew-nameback repo
         uses: actions/checkout@v4
 
       - name: Download checksums from nameback release
         run: |
-          VERSION="${{ inputs.version }}"
+          VERSION="${{ steps.get-version.outputs.version }}"
           echo "Downloading checksums for v${VERSION}..."
           gh release download "v${VERSION}" \
             --repo h4x0r/nameback \
@@ -46,7 +56,7 @@ jobs:
 
       - name: Update Homebrew Formula
         run: |
-          VERSION="${{ inputs.version }}"
+          VERSION="${{ steps.get-version.outputs.version }}"
           ARM64_SHA="${{ steps.checksums.outputs.arm64_sha }}"
           X86_64_SHA="${{ steps.checksums.outputs.x86_64_sha }}"
 
@@ -66,7 +76,7 @@ jobs:
 
       - name: Update Homebrew Cask
         run: |
-          VERSION="${{ inputs.version }}"
+          VERSION="${{ steps.get-version.outputs.version }}"
           ARM64_SHA="${{ steps.checksums.outputs.arm64_sha }}"
           X86_64_SHA="${{ steps.checksums.outputs.x86_64_sha }}"
 
@@ -84,7 +94,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          VERSION="${{ inputs.version }}"
+          VERSION="${{ steps.get-version.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add Formula/nameback.rb Casks/nameback.rb
