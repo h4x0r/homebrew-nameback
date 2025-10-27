@@ -1,12 +1,12 @@
 cask "nameback" do
-  version "0.6.17"
+  version "0.6.18"
 
   if Hardware::CPU.arm?
     url "https://github.com/h4x0r/nameback/releases/download/v#{version}/nameback-aarch64-apple-darwin.dmg"
-    sha256 "317c3860f567ca9b88b59b2af4505161ec900c02eac4d207dcac7d81b0f297ca"
+    sha256 "330b0746075bdcfeba668afd378f1bc2ed9d59ffa4fd1f9ce349e352bf03cdf4"
   else
     url "https://github.com/h4x0r/nameback/releases/download/v#{version}/nameback-x86_64-apple-darwin.dmg"
-    sha256 "25a9221259594e0949b1b10750aa9bb33f3cb33c29af821c3f57ee21ed5c0d66"
+    sha256 "137284b066c72ba376f803368c4f00d63b5bf3b3295f6b53c14067607019d330"
   end
 
   name "Nameback"
