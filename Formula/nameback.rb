@@ -1,15 +1,15 @@
 class Nameback < Formula
   desc "Rename files based on their metadata with multi-language OCR and HEIC support"
   homepage "https://github.com/h4x0r/nameback"
-  version "0.6.31"
+  version "0.6.32"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/h4x0r/nameback/releases/download/v0.6.31/nameback-aarch64-apple-darwin.dmg"
-      sha256 "285c8e6d989b6c7eac0bc7c6ae3110fe79a406498cdcc6e87e8f848b6f917bbc"
+      url "https://github.com/h4x0r/nameback/releases/download/v0.6.32/nameback-aarch64-apple-darwin.dmg"
+      sha256 "de6b5d80c70d58f24eab71562878abd7b6d763c570e05f8d8c3331fcbf1c88fa"
     else
-      url "https://github.com/h4x0r/nameback/releases/download/v0.6.31/nameback-x86_64-apple-darwin.dmg"
-      sha256 "a2fc6800c92e01a2d42c2460516dc1a3055e9d54bb0c8d3490b8ea3e66eb7881"
+      url "https://github.com/h4x0r/nameback/releases/download/v0.6.32/nameback-x86_64-apple-darwin.dmg"
+      sha256 "9c93fd125c501fa8d166e6b5949e87ca017d81909745eb53fca2dd27e4a0576c"
     end
   end
 
