@@ -6,10 +6,10 @@ class Nameback < Formula
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/h4x0r/nameback/releases/download/v0.7.16/nameback-aarch64-apple-darwin.dmg"
-      sha256 "e2d152c7bdc4840bd72d0653c692e65cf05f8af46a7656d08cd3dc83218f5b80"
+      sha256 "0f441e3329b0c249d9270297cd4de2542b3c1bc43fc3cf2d8f2a9e29f7d7604e"
     else
       url "https://github.com/h4x0r/nameback/releases/download/v0.7.16/nameback-x86_64-apple-darwin.dmg"
-      sha256 "f50460f7645e4200d2bbb444ffa43b60488f8d45e3ddadc258c470080e00c9c2"
+      sha256 "bda684eca2dd7154d78c7ab8cbb22d9eced1a032ffd128cf4c70aaddb6afe315"
     end
   end
 
